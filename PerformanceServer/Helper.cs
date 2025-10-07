@@ -37,7 +37,7 @@ namespace PerformanceServer
         {
             byte[] inputBytes = System.Text.Encoding.UTF8.GetBytes(input);
             byte[] hashBytes = MD5.HashData(inputBytes);
-            return Convert.ToHexStringLower(hashBytes);
+            return Convert.ToHexString(hashBytes).ToLowerInvariant();
         }
     }
 }
