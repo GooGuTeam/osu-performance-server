@@ -9,20 +9,19 @@ using osu.Game.Rulesets;
 using osu.Game.Rulesets.Difficulty;
 using osu.Game.Rulesets.Scoring;
 using osu.Game.Scoring;
-using PerformanceServer.Helpers;
 
 namespace PerformanceServer
 {
     public class PerformanceRequestBody
     {
         [JsonProperty("beatmap_id")] public int BeatmapId { get; set; }
-        [JsonProperty("checksum")] public string Checksum { get; set; }
-        [JsonProperty("mods")] public List<APIMod> Mods { get; set; }
+        [JsonProperty("checksum")] public string? Checksum { get; set; }
+        [JsonProperty("mods")] public List<APIMod> Mods { get; set; } = [];
         [JsonProperty("is_legacy")] public bool IsLegacy { get; set; }
         [JsonProperty("accuracy")] public float Accuracy { get; set; }
         [JsonProperty("ruleset_id")] public int RulesetId { get; set; }
         [JsonProperty("combo")] public int Combo { get; set; }
-        [JsonProperty("statistics")] public Dictionary<HitResult, int> Statistics { get; set; }
+        [JsonProperty("statistics")] public Dictionary<HitResult, int> Statistics { get; set; } = new();
         [JsonProperty("beatmap_file")] public string? BeatmapFile { get; set; }
     }
 
@@ -35,15 +34,16 @@ namespace PerformanceServer
         [Produces("application/json")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status503ServiceUnavailable)]
         public async Task<ActionResult<PerformanceAttributes>> CalculatePerformance(
             [FromBody] PerformanceRequestBody body)
         {
-            var ruleset = RulesetHelper.GetRuleset(body.RulesetId);
-            var scoreInfo = new ScoreInfo
+            Ruleset ruleset = Helper.GetRuleset(body.RulesetId);
+            ScoreInfo scoreInfo = new()
             {
                 IsLegacyScore = body.IsLegacy,
                 Ruleset = new RulesetInfo { OnlineID = body.RulesetId },
-                BeatmapInfo = new BeatmapInfo { OnlineID = body.BeatmapId, MD5Hash = body.Checksum },
+                BeatmapInfo = new BeatmapInfo { OnlineID = body.BeatmapId },
                 Statistics = body.Statistics,
                 Mods = body.Mods.Select(m => m.ToMod(ruleset)).ToArray(),
                 Accuracy = body.Accuracy,
@@ -56,14 +56,26 @@ namespace PerformanceServer
             }
             else
             {
-                var beatmap = await ProcessorWorkingBeatmap.ReadFromOnlineAsync(body.BeatmapId);
-                workingBeatmap = new ProcessorWorkingBeatmap(beatmap);
+                try
+                {
+                    Beatmap beatmap =
+                        await ProcessorWorkingBeatmap.ReadById(body.BeatmapId, body.Checksum ?? "");
+                    workingBeatmap = new ProcessorWorkingBeatmap(beatmap);
+                }
+                catch (InvalidOperationException)
+                {
+                    return StatusCode(503, "Failed to fetch beatmap from online.");
+                }
             }
 
-            var difficultyAttributes = ruleset.CreateDifficultyCalculator(workingBeatmap).Calculate(scoreInfo.Mods);
-            var performanceCalculator = ruleset.CreatePerformanceCalculator();
-            var performanceAttributes = performanceCalculator?.Calculate(scoreInfo, difficultyAttributes);
-            return performanceAttributes;
+            DifficultyAttributes? difficultyAttributes =
+                ruleset.CreateDifficultyCalculator(workingBeatmap).Calculate(scoreInfo.Mods);
+            PerformanceCalculator? performanceCalculator = ruleset.CreatePerformanceCalculator();
+            PerformanceAttributes? performanceAttributes =
+                performanceCalculator?.Calculate(scoreInfo, difficultyAttributes);
+            return performanceAttributes == null
+                ? BadRequest("Failed to calculate performance attributes.")
+                : Ok(performanceAttributes);
         }
     }
 }

@@ -6,10 +6,11 @@ using osu.Game.Rulesets.Osu;
 using osu.Game.Rulesets.Taiko;
 using osu.Game.Rulesets.Catch;
 using osu.Game.Rulesets.Mania;
+using System.Security.Cryptography;
 
-namespace PerformanceServer.Helpers
+namespace PerformanceServer
 {
-    public static class RulesetHelper
+    public static class Helper
     {
         public static Ruleset GetRuleset(int rulesetId)
         {
@@ -30,6 +31,13 @@ namespace PerformanceServer.Helpers
                 case 3:
                     return new ManiaRuleset();
             }
+        }
+        
+        public static string ComputeMd5(string input)
+        {
+            byte[] inputBytes = System.Text.Encoding.UTF8.GetBytes(input);
+            byte[] hashBytes = MD5.HashData(inputBytes);
+            return Convert.ToHexStringLower(hashBytes);
         }
     }
 }

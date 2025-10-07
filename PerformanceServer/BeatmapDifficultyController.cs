@@ -8,7 +8,6 @@ using osu.Game.Online.API;
 using osu.Game.Rulesets;
 using osu.Game.Rulesets.Difficulty;
 using osu.Game.Rulesets.Mods;
-using PerformanceServer.Helpers;
 
 namespace PerformanceServer
 {
@@ -30,6 +29,7 @@ namespace PerformanceServer
         [Produces("application/json")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status503ServiceUnavailable)]
         public async Task<ActionResult<DifficultyAttributes>> CalculateDifficulty([FromBody] DifficultyRequestBody body)
         {
             ProcessorWorkingBeatmap workingBeatmap;
@@ -39,11 +39,19 @@ namespace PerformanceServer
             }
             else
             {
-                Beatmap beatmap = await ProcessorWorkingBeatmap.ReadFromOnlineAsync(body.BeatmapId);
-                workingBeatmap = new ProcessorWorkingBeatmap(beatmap);
+                try
+                {
+                    Beatmap beatmap =
+                        await ProcessorWorkingBeatmap.ReadById(body.BeatmapId, body.Checksum ?? "");
+                    workingBeatmap = new ProcessorWorkingBeatmap(beatmap);
+                }
+                catch (InvalidOperationException)
+                {
+                    return StatusCode(503, "Failed to fetch beatmap from online.");
+                }
             }
 
-            Ruleset ruleset = RulesetHelper.GetRuleset(body.RulesetId ?? workingBeatmap.BeatmapInfo.Ruleset.OnlineID);
+            Ruleset ruleset = Helper.GetRuleset(body.RulesetId ?? workingBeatmap.BeatmapInfo.Ruleset.OnlineID);
             Mod[] mods = body.Mods.Select(m => m.ToMod(ruleset)).ToArray();
             DifficultyAttributes? difficultyAttributes =
                 ruleset.CreateDifficultyCalculator(workingBeatmap).Calculate(mods);
