@@ -13,7 +13,7 @@ using PerformanceServer.Helpers;
 
 namespace PerformanceServer
 {
-    public class RequestBody
+    public class PerformanceRequestBody
     {
         [JsonProperty("beatmap_id")] public int BeatmapId { get; set; }
         [JsonProperty("checksum")] public string Checksum { get; set; }
@@ -35,7 +35,8 @@ namespace PerformanceServer
         [Produces("application/json")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<ActionResult<PerformanceAttributes>> CalculatePerformance([FromBody] RequestBody body)
+        public async Task<ActionResult<PerformanceAttributes>> CalculatePerformance(
+            [FromBody] PerformanceRequestBody body)
         {
             var ruleset = RulesetHelper.GetRuleset(body.RulesetId);
             var scoreInfo = new ScoreInfo
