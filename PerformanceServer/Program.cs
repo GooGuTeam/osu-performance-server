@@ -16,8 +16,10 @@ namespace PerformanceServer
 
             WebApplication app = builder.Build();
 
+            // Simple root endpoint for quick health / smoke checks.
+            app.MapGet("/", () => Results.Ok(new { status = "ok", time = DateTime.UtcNow }));
+
             app.MapControllers();
-            app.UseHttpsRedirection();
             app.Run();
         }
     }

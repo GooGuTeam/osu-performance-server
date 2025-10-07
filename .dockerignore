@@ -1,0 +1,22 @@
+# Build outputs
+bin/
+obj/
+
+# VCS
+.git
+.gitignore
+
+# IDE / tooling
+.idea/
+.vscode/
+*.user
+*.suo
+*.swp
+*.DS_Store
+
+# Local beatmap cache (mount as volume instead)
+PerformanceServer/beatmaps/
+
+# Other
+Dockerfile*
+

@@ -29,9 +29,8 @@ A server for calculating osu! performance points (pp) and star ratings.
 | `OSU_FILE_WEB_URL`      | `https://osu.ppy.sh/osu/{0}` | Format string used to fetch beatmaps by ID. `{0}` replaced with beatmap ID.                 |
 | `MAX_BEATMAP_FILE_SIZE` | `5242880` (5 MB)             | Max size (bytes) allowed when deciding to persist fetched file. Larger files are not saved. |
 
-## API Overview
-
-Base URL: `http://localhost:5225` (or your configured host/port)
+## Health Endpoints
+- `GET /` returns `{ "status": "ok", "time": "<UTC timestamp>" }` for readiness probes.
 
 ### POST /difficulty
 Calculate difficulty attributes for a beatmap (star rating, etc.).
@@ -123,16 +122,8 @@ Advanced mods with settings (e.g., DT with speed change) are not yet surfaced he
 - When `SAVE_BEATMAP_FILES=true`, successful remote fetches (and inline uploads with `beatmap_id`) are written under `BEATMAPS_PATH` using `<beatmap_id>.osu`.
 - Providing a `checksum` with a cached map triggers integrity verification (MD5). A mismatch forces redownload.
 
-## Development Tips
-- Enable detailed logging via `dotnet run --verbosity normal` or add ASP.NET Core logging configuration.
-- Add unit tests around calculation wrapper methods if you introduce new validation.
-- If you need to support batch calculations, consider a new endpoint accepting an array and parallelizing internally.
-
 ## Troubleshooting
 | Issue              | Cause                              | Resolution                                               |
 |--------------------|------------------------------------|----------------------------------------------------------|
 | 503 on fetch       | Beatmap not reachable              | Verify ID exists, network, or site availability          |
 | 400 on performance | Invalid statistics / internal null | Ensure ruleset matches beatmap & stats not contradictory |
-
-## License
-MIT License. See `LICENSE` for full text.
