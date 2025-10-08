@@ -7,6 +7,7 @@ using osu.Game.Beatmaps;
 using osu.Game.Online.API;
 using osu.Game.Rulesets;
 using osu.Game.Rulesets.Difficulty;
+using osu.Game.Rulesets.Mods;
 using osu.Game.Rulesets.Scoring;
 using osu.Game.Scoring;
 
@@ -39,13 +40,21 @@ namespace PerformanceServer
             [FromBody] PerformanceRequestBody body)
         {
             Ruleset ruleset = Helper.GetRuleset(body.RulesetId);
+            List<Mod> mods = body.Mods.Select(m => m.ToMod(ruleset)).ToList();
+            if (body.IsLegacy && !mods.Any(m => m is ModClassic))
+            {
+                Mod? classicMod = ruleset.CreateModFromAcronym("CL");
+                if (classicMod != null)
+                    mods.Add(classicMod);
+            }
+
             ScoreInfo scoreInfo = new()
             {
                 IsLegacyScore = body.IsLegacy,
                 Ruleset = new RulesetInfo { OnlineID = body.RulesetId },
                 BeatmapInfo = new BeatmapInfo { OnlineID = body.BeatmapId },
                 Statistics = body.Statistics,
-                Mods = body.Mods.Select(m => m.ToMod(ruleset)).ToArray(),
+                Mods = mods.ToArray(),
                 Accuracy = body.Accuracy,
                 Combo = body.Combo,
             };
