@@ -2,7 +2,7 @@
 # It expects the osu directory to be at the same level as the osu-performance-server directory
 
 
-$CSPROJ="PerformanceServer/PerformanceServer"
+$CSPROJ="PerformanceServer/PerformanceServer.csproj"
 $SLN="osu-performance-server.sln"
 
 $DEPENDENCIES=@(
