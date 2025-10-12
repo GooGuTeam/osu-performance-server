@@ -6,6 +6,9 @@ COPY global.json* ./
 COPY osu-performance-server.sln ./
 COPY PerformanceServer/PerformanceServer.csproj PerformanceServer/
 
+ARG GH_OWNER
+ARG GH_TOKEN
+
 RUN dotnet nuget add source \
     --name github \
     --username ${GH_OWNER} \
