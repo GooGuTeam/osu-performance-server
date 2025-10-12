@@ -7,6 +7,7 @@ namespace PerformanceServer
     {
         public static bool SaveBeatmapFiles { get; set; }
         public static string BeatmapsPath { get; set; } = "./beatmaps";
+        public static string RulesetsPath { get; set; } = "./rulesets";
         public static string OsuFileWebUrl { get; set; } = "https://osu.ppy.sh/osu/{0}";
         public static int MaxBeatmapFileSize { get; set; } = 5 * 1024 * 1024; // 5 MB
 
@@ -14,6 +15,7 @@ namespace PerformanceServer
         {
             SaveBeatmapFiles = Environment.GetEnvironmentVariable("SAVE_BEATMAP_FILES")?.ToLower() == "true";
             BeatmapsPath = Environment.GetEnvironmentVariable("BEATMAPS_PATH") ?? BeatmapsPath;
+            RulesetsPath = Environment.GetEnvironmentVariable("RULESETS_PATH") ?? RulesetsPath;
             OsuFileWebUrl = Environment.GetEnvironmentVariable("OSU_FILE_WEB_URL") ?? OsuFileWebUrl;
             if (int.TryParse(Environment.GetEnvironmentVariable("MAX_BEATMAP_FILE_SIZE"), out int size))
             {

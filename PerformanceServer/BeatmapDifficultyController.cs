@@ -8,21 +8,23 @@ using osu.Game.Online.API;
 using osu.Game.Rulesets;
 using osu.Game.Rulesets.Difficulty;
 using osu.Game.Rulesets.Mods;
+using PerformanceServer.Rulesets;
 
 namespace PerformanceServer
 {
-    public class DifficultyRequestBody
+    public class DifficultyRequestBody : INeedsRuleset
     {
         [JsonProperty("beatmap_id")] public int BeatmapId { get; set; }
         [JsonProperty("checksum")] public string? Checksum { get; set; }
         [JsonProperty("mods")] public List<APIMod> Mods { get; set; } = [];
         [JsonProperty("ruleset_id")] public int? RulesetId { get; set; }
+        [JsonProperty("ruleset")] public string? RulesetName { get; set; }
         [JsonProperty("beatmap_file")] public string? BeatmapFile { get; set; }
     }
 
     [ApiController]
     [Route("difficulty")]
-    public class BeatmapDifficultyController : ControllerBase
+    public class BeatmapDifficultyController(IRulesetManager manager) : ControllerBase
     {
         [HttpPost]
         [Consumes("application/json")]
@@ -51,8 +53,7 @@ namespace PerformanceServer
                 }
             }
 
-            int rulesetId = body.RulesetId ?? workingBeatmap.BeatmapInfo.Ruleset.OnlineID;
-            Ruleset ruleset = Helper.GetRuleset(rulesetId);
+            Ruleset ruleset = manager.GetRuleset(body, workingBeatmap.BeatmapInfo.Ruleset.OnlineID);
             Mod[] mods = body.Mods.Select(m => m.ToMod(ruleset)).ToArray();
             DifficultyAttributes? difficultyAttributes =
                 ruleset.CreateDifficultyCalculator(workingBeatmap).Calculate(mods);
@@ -61,7 +62,7 @@ namespace PerformanceServer
                 JsonConvert.DeserializeObject<Dictionary<string, object>>(
                     JsonConvert.SerializeObject(difficultyAttributes));
             if (attr != null)
-                attr["ruleset_id"] = rulesetId;
+                attr["ruleset"] = ruleset.ShortName;
 
             return attr != null ? Ok(attr) : BadRequest("Failed to calculate difficulty.");
         }

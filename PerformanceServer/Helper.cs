@@ -12,27 +12,6 @@ namespace PerformanceServer
 {
     public static class Helper
     {
-        public static Ruleset GetRuleset(int rulesetId)
-        {
-            switch (rulesetId)
-            {
-                default:
-                    throw new ArgumentException("Invalid ruleset ID provided.");
-
-                case 0:
-                    return new OsuRuleset();
-
-                case 1:
-                    return new TaikoRuleset();
-
-                case 2:
-                    return new CatchRuleset();
-
-                case 3:
-                    return new ManiaRuleset();
-            }
-        }
-        
         public static string ComputeMd5(string input)
         {
             byte[] inputBytes = System.Text.Encoding.UTF8.GetBytes(input);
