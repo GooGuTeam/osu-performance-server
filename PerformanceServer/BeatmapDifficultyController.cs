@@ -8,6 +8,7 @@ using osu.Game.Online.API;
 using osu.Game.Rulesets;
 using osu.Game.Rulesets.Difficulty;
 using osu.Game.Rulesets.Mods;
+using PerformanceServer.Rulesets;
 
 namespace PerformanceServer
 {
@@ -23,7 +24,7 @@ namespace PerformanceServer
 
     [ApiController]
     [Route("difficulty")]
-    public class BeatmapDifficultyController : ControllerBase
+    public class BeatmapDifficultyController(IRulesetManager manager) : ControllerBase
     {
         [HttpPost]
         [Consumes("application/json")]
@@ -52,7 +53,7 @@ namespace PerformanceServer
                 }
             }
 
-            Ruleset ruleset = Helper.GetRuleset(body, workingBeatmap.BeatmapInfo.Ruleset.OnlineID);
+            Ruleset ruleset = manager.GetRuleset(body, workingBeatmap.BeatmapInfo.Ruleset.OnlineID);
             Mod[] mods = body.Mods.Select(m => m.ToMod(ruleset)).ToArray();
             DifficultyAttributes? difficultyAttributes =
                 ruleset.CreateDifficultyCalculator(workingBeatmap).Calculate(mods);

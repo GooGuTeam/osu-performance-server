@@ -26,6 +26,7 @@ RUN apt-get update && apt-get install -y curl && rm -rf /var/lib/apt/lists/*
 ENV ASPNETCORE_URLS=http://0.0.0.0:8080 \
     SAVE_BEATMAP_FILES=false \
     BEATMAPS_PATH=/data/beatmaps \
+    RULESETS_PATH=/data/rulesets \
     MAX_BEATMAP_FILE_SIZE=5242880
 
 VOLUME ["/data"]

@@ -10,6 +10,7 @@ using osu.Game.Rulesets.Difficulty;
 using osu.Game.Rulesets.Mods;
 using osu.Game.Rulesets.Scoring;
 using osu.Game.Scoring;
+using PerformanceServer.Rulesets;
 
 namespace PerformanceServer
 {
@@ -29,7 +30,7 @@ namespace PerformanceServer
 
     [ApiController]
     [Route("performance")]
-    public class PerformanceController : ControllerBase
+    public class PerformanceController(IRulesetManager manager) : ControllerBase
     {
         [HttpPost]
         [Consumes("application/json")]
@@ -43,7 +44,7 @@ namespace PerformanceServer
             Ruleset ruleset;
             try
             {
-                ruleset = Helper.GetRuleset(body);
+                ruleset = manager.GetRuleset(body);
             }
             catch (ArgumentException e)
             {
