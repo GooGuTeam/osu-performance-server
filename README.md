@@ -40,6 +40,7 @@ Request JSON fields:
 - `checksum` (string, optional) MD5 hash used to validate local cached file; if mismatch triggers re-download.
 - `mods` (array, optional) List of osu! API mod objects (typically at least `{ "acronym": "HD" }`). Unsupported or invalid acronyms will be ignored by the underlying conversion if not recognized.
 - `ruleset_id` (int, optional) Override ruleset; if omitted and beatmap file is provided/decoded it falls back to the beatmap's own ruleset.
+- `ruleset_name` (string, optional) Same as above but by name (e.g., `osu`, `taiko`, `fruits`, `mania`). If both ID and name are provided, Name takes precedence.
 - `beatmap_file` (string, optional) Raw `.osu` file content (entire file). If present, `beatmap_id` may still be supplied for caching, but content is authoritative.
 
 Example request using inline file content:
@@ -66,7 +67,8 @@ Request JSON fields:
 - `mods` (array) Same structure as above.
 - `is_legacy` (bool) Whether to treat score as stable scores.
 - `accuracy` (float) Accuracy value (0.0–1.0). Provide either accurate `statistics` or a suitable accuracy.
-- `ruleset_id` (int) Explicit ruleset selection (required here because score construction needs it up-front unless you infer from map; server expects this field).
+- `ruleset_id` (int, optional) Explicit ruleset selection (Either `ruleset_id` or `ruleset_name` must be provided).
+- `ruleset_name` (string, optional) Same as above but by name (e.g., `osu`, `taiko`, `fruits`, `mania`). If both ID and name are provided, Name takes precedence.
 - `combo` (int) Achieved max combo for the score.
 - `statistics` (object) Mapping of hit result enum names to counts. Keys must match `HitResult` enumeration names from osu! (e.g., `great`, `ok`, `meh`, `miss`, `perfect`, `good`, etc. — varies by ruleset). Only relevant ones need to be present.
 
@@ -88,10 +90,9 @@ Minimal example:
 }
 ```
 
-Successful Response: `200 OK` with a JSON `PerformanceAttributes` object with `ruleset_id` including (fields differ by ruleset):
-- `total` (float) Total pp value.
+Successful Response: `200 OK` with a JSON `PerformanceAttributes` object with `ruleset` (name) including (fields differ by ruleset):
+- `pp` (float) Total pp value.
 - Component breakdown fields (aim, speed, flashlight, accuracy, strain, etc.)
-- Embedded `DifficultyAttributes` subset depending on version
 
 Error Cases:
 - `400 Bad Request` – Calculation failed (e.g., malformed beatmap or inconsistent inputs).
