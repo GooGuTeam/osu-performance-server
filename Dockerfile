@@ -10,18 +10,25 @@ RUN dotnet restore osu-performance-server.sln
 
 COPY PerformanceServer/ PerformanceServer/
 
-RUN dotnet nuget locals all --clear
-
 ARG PUBLISH_CONFIGURATION=Release
 RUN dotnet publish PerformanceServer/PerformanceServer.csproj \
     -c $PUBLISH_CONFIGURATION \
     -o /app/publish
+    
+RUN dotnet nuget locals all --clear
 
 # -------- Runtime Stage --------
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS runtime
 WORKDIR /app
 
-RUN apt-get update && apt-get install -y curl && rm -rf /var/lib/apt/lists/*
+ARG RULESET_REPO="GooGuTeam/custom-rulesets"
+ENV RULESET_REPO=${RULESET_REPO}
+ARG DOWNLOAD_RULESETS=false
+ENV DOWNLOAD_RULESETS=${DOWNLOAD_RULESETS}
+
+RUN apt-get update && apt-get install -y curl jq && rm -rf /var/lib/apt/lists/*
+
+VOLUME ["/data"]
 
 ENV ASPNETCORE_URLS=http://0.0.0.0:8080 \
     SAVE_BEATMAP_FILES=false \
@@ -29,13 +36,32 @@ ENV ASPNETCORE_URLS=http://0.0.0.0:8080 \
     RULESETS_PATH=/data/rulesets \
     MAX_BEATMAP_FILE_SIZE=5242880
 
-VOLUME ["/data"]
-
 COPY --from=build /app/publish .
+
+RUN mkdir -p /tmp/rulesets && \
+    if [ "$DOWNLOAD_RULESETS" = "true" ]; then \
+        echo "Fetching latest release from GitHub repo: $RULESET_REPO"; \
+        API_URL="https://api.github.com/repos/${RULESET_REPO}/releases/latest"; \
+        echo "API: $API_URL"; \
+        ASSETS=$(curl -sL "$API_URL" | jq -r '.assets[] | select(.name | endswith(".dll")) | .browser_download_url'); \
+        if [ -z "$ASSETS" ]; then \
+            echo "No DLL assets found in the latest release."; \
+        else \
+            echo "$ASSETS" | while read -r url; do \
+                echo "Downloading $url"; \
+                curl -L -o "/tmp/rulesets/$(basename "$url")" "$url"; \
+            done; \
+        fi; \
+    else \
+        echo "Skipping ruleset download."; \
+    fi
 
 EXPOSE 8080
 
 HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 \
   CMD curl http://127.0.0.1:8080 || exit 1
 
-ENTRYPOINT ["dotnet", "PerformanceServer.dll"]
+COPY entrypoint.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh
+
+ENTRYPOINT ["/entrypoint.sh"]
