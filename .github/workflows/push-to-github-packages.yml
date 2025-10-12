@@ -7,6 +7,7 @@ on:
 env:
   REGISTRY: ghcr.io
   IMAGE_NAME: googuteam/osu-performance-server
+  RULESET_REPO: GooGuTeam/custom-rulesets
 
 jobs:
   build:
@@ -14,6 +15,9 @@ jobs:
     permissions:
       contents: read
       packages: write
+    strategy:
+      matrix:
+        rulesets: [ true, false ]
 
     steps:
       - name: Checkout repository
@@ -29,15 +33,31 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Set Docker tags
+        id: tags
+        run: |
+          if [ "${{ matrix.rulesets }}" = "true" ]; then
+            echo "TAG_CUSTOM=true" >> $GITHUB_ENV
+            echo "IMAGE_TAG_SHA=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:custom-rulesets-${{ github.sha }}" >> $GITHUB_ENV
+            echo "IMAGE_TAG=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:custom-rulesets" >> $GITHUB_ENV
+          else
+            echo "TAG_CUSTOM=false" >> $GITHUB_ENV
+            echo "IMAGE_TAG_SHA=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}" >> $GITHUB_ENV
+            echo "IMAGE_TAG=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest" >> $GITHUB_ENV
+          fi
+
       - name: Build and push Docker image
         uses: docker/build-push-action@v5
         with:
           context: .
           file: ./Dockerfile
           push: true
-          tags: |
-            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
-            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
           platforms: linux/amd64,linux/arm64
           cache-from: type=gha
           cache-to: type=gha,mode=max
+          build-args: |
+            DOWNLOAD_RULESETS=${{ matrix.rulesets }}
+            RULESET_REPO=${{ env.RULESET_REPO }}
+          tags: |
+            ${{ env.IMAGE_TAG }}
+            ${{ env.IMAGE_TAG_SHA }}
