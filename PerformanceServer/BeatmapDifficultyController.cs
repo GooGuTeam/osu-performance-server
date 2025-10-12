@@ -51,12 +51,19 @@ namespace PerformanceServer
                 }
             }
 
-            Ruleset ruleset = Helper.GetRuleset(body.RulesetId ?? workingBeatmap.BeatmapInfo.Ruleset.OnlineID);
+            int rulesetId = body.RulesetId ?? workingBeatmap.BeatmapInfo.Ruleset.OnlineID;
+            Ruleset ruleset = Helper.GetRuleset(rulesetId);
             Mod[] mods = body.Mods.Select(m => m.ToMod(ruleset)).ToArray();
             DifficultyAttributes? difficultyAttributes =
                 ruleset.CreateDifficultyCalculator(workingBeatmap).Calculate(mods);
 
-            return Ok(difficultyAttributes);
+            Dictionary<string, object>? attr =
+                JsonConvert.DeserializeObject<Dictionary<string, object>>(
+                    JsonConvert.SerializeObject(difficultyAttributes));
+            if (attr != null)
+                attr["ruleset_id"] = rulesetId;
+
+            return attr != null ? Ok(attr) : BadRequest("Failed to calculate difficulty.");
         }
     }
 }

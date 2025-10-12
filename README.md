@@ -88,7 +88,7 @@ Minimal example:
 }
 ```
 
-Successful Response: `200 OK` with a JSON `PerformanceAttributes` object including (fields differ by ruleset):
+Successful Response: `200 OK` with a JSON `PerformanceAttributes` object with `ruleset_id` including (fields differ by ruleset):
 - `total` (float) Total pp value.
 - Component breakdown fields (aim, speed, flashlight, accuracy, strain, etc.)
 - Embedded `DifficultyAttributes` subset depending on version
@@ -123,7 +123,9 @@ Advanced mods with settings (e.g., DT with speed change) are not yet surfaced he
 - Providing a `checksum` with a cached map triggers integrity verification (MD5). A mismatch forces redownload.
 
 ## Troubleshooting
-| Issue              | Cause                              | Resolution                                               |
-|--------------------|------------------------------------|----------------------------------------------------------|
-| 503 on fetch       | Beatmap not reachable              | Verify ID exists, network, or site availability          |
-| 400 on performance | Invalid statistics / internal null | Ensure ruleset matches beatmap & stats not contradictory |
+| Issue              | Cause                              | Resolution                                                             |
+|--------------------|------------------------------------|------------------------------------------------------------------------|
+| 503 on fetch       | Beatmap not reachable              | Verify ID exists, network, or site availability                        |
+| 400 on performance | Invalid statistics / internal null | Ensure ruleset matches beatmap & stats not contradictory               |
+| 400 on difficulty  | Invalid beatmap / ruleset          | Ensure beatmap is valid & beatmap can be convert into specific ruleset |
+
