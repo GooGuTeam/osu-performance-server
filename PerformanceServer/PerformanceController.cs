@@ -56,7 +56,7 @@ namespace PerformanceServer
                 Statistics = body.Statistics,
                 Mods = mods.ToArray(),
                 Accuracy = body.Accuracy,
-                Combo = body.Combo,
+                MaxCombo = body.Combo,
             };
             ProcessorWorkingBeatmap workingBeatmap;
             if (body.BeatmapFile != null)
