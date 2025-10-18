@@ -15,8 +15,8 @@
         <PackageReference Include="ppy.osu.Game.Rulesets.Taiko" Version="2025.1007.0"/>
 
         <!-- https://github.com/orgs/GooGuTeam/packages?repo_name=osu -->
-        <PackageReference Include="g0v0.osu.Game" Version="2025.1012.0"/>
-        <PackageReference Include="g0v0.osu.Game.Rulesets.Osu" Version="2025.1012.0"/>
+        <PackageReference Include="g0v0.osu.Game" Version="2025.1018.0"/>
+        <PackageReference Include="g0v0.osu.Game.Rulesets.Osu" Version="2025.1018.0"/>
     </ItemGroup>
 
 </Project>
