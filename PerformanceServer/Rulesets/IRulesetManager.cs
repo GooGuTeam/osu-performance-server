@@ -10,5 +10,9 @@ namespace PerformanceServer.Rulesets
         public Ruleset GetRuleset(int rulesetId);
         public Ruleset GetRuleset(string shortName);
         public Ruleset GetRuleset(INeedsRuleset body, int defaultRulesetId = -1);
+
+        public IEnumerable<Ruleset> GetRulesets();
+        public IEnumerable<Ruleset> GetHasPerformCalculatorRulesets();
+        public IEnumerable<Ruleset> GetHasDifficultyCalculatorRulesets();
     }
 }

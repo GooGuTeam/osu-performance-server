@@ -34,7 +34,7 @@ A server for calculating osu! performance points (pp) and star ratings.
 
 - `GET /` returns `{ "status": "ok", "time": "<UTC timestamp>" }` for readiness probes.
 
-### POST /difficulty
+## POST /difficulty
 
 Calculate difficulty attributes for a beatmap (star rating, etc.).
 
@@ -46,7 +46,7 @@ Request JSON fields:
   invalid acronyms will be ignored by the underlying conversion if not recognized.
 - `ruleset_id` (int, optional) Override ruleset; if omitted and beatmap file is provided/decoded it falls back to the
   beatmap's own ruleset.
-- `ruleset_name` (string, optional) Same as above but by name (e.g., `osu`, `taiko`, `fruits`, `mania`). If both ID and
+- `ruleset` (string, optional) Same as above but by name (e.g., `osu`, `taiko`, `fruits`, `mania`). If both ID and
   name are provided, Name takes precedence.
 - `beatmap_file` (string, optional) Raw `.osu` file content (entire file). If present, `beatmap_id` may still be
   supplied for caching, but content is authoritative.
@@ -77,7 +77,7 @@ Error Cases:
 - `400 Bad Request` – Internal calculation failed (rare / invalid input).
 - `503 Service Unavailable` – Remote fetch failed (e.g., beatmap not accessible online).
 
-### POST /performance
+## POST /performance
 
 Calculate performance attributes (pp) using both difficulty and supplied score context.
 
@@ -87,8 +87,8 @@ Request JSON fields:
 - `mods` (array) Same structure as above.
 - `is_legacy` (bool) Whether to treat score as stable scores.
 - `accuracy` (float) Accuracy value (0.0–1.0). Provide either accurate `statistics` or a suitable accuracy.
-- `ruleset_id` (int, optional) Explicit ruleset selection (Either `ruleset_id` or `ruleset_name` must be provided).
-- `ruleset_name` (string, optional) Same as above but by name (e.g., `osu`, `taiko`, `fruits`, `mania`). If both ID and
+- `ruleset_id` (int, optional) Explicit ruleset selection (Either `ruleset_id` or `ruleset` must be provided).
+- `ruleset` (string, optional) Same as above but by name (e.g., `osu`, `taiko`, `fruits`, `mania`). If both ID and
   name are provided, Name takes precedence.
 - `combo` (int) Achieved max combo for the score.
 - `statistics` (object) Mapping of hit result enum names to counts. Keys must match `HitResult` enumeration names from
@@ -128,6 +128,37 @@ Error Cases:
 
 - `400 Bad Request` – Calculation failed (e.g., malformed beatmap or inconsistent inputs).
 - `503 Service Unavailable` – Beatmap fetch failed.
+
+## GET /available_rulesets
+
+```bash
+curl -X GET "http://localhost:5225/available_rulesets"
+```
+
+Response: `200 OK` with a JSON object like this:
+
+```json
+{
+  "has_performance_calculator": [
+    "osu",
+    "taiko",
+    "fruits",
+    "mania"
+  ],
+  "has_difficulty_calculator": [
+    "osu",
+    "taiko",
+    "fruits",
+    "mania"
+  ],
+  "loaded_rulesets": [
+    "osu",
+    "taiko",
+    "fruits",
+    "mania"
+  ]
+}
+```
 
 ## Curl Examples
 
