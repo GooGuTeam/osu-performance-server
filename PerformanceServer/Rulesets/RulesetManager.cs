@@ -3,6 +3,7 @@
 
 using osu.Game.Rulesets;
 using osu.Game.Rulesets.Catch;
+using osu.Game.Rulesets.Difficulty;
 using osu.Game.Rulesets.Mania;
 using osu.Game.Rulesets.Osu;
 using osu.Game.Rulesets.Taiko;
@@ -18,6 +19,8 @@ namespace PerformanceServer.Rulesets
 
         private readonly Dictionary<string, Ruleset> _rulesets = new();
         private readonly Dictionary<int, Ruleset> _rulesetsById = new();
+        private readonly List<string> _hasPerformanceCalculatorRulesets = new();
+        private readonly List<string> _hasDifficultyCalculatorRulesets = new();
 
         public RulesetManager(ILogger<RulesetManager> logger)
         {
@@ -26,12 +29,39 @@ namespace PerformanceServer.Rulesets
             LoadFromDisk();
         }
 
+        private static Tuple<bool, bool> GetAttributeTypesForRuleset(Ruleset ruleset)
+        {
+            bool hasPerformanceType = false;
+            bool hasDifficultyType = false;
+
+            foreach (Type type in Assembly.GetAssembly(ruleset.GetType())!.GetTypes())
+            {
+                if (type.IsSubclassOf(typeof(PerformanceCalculator)))
+                    hasPerformanceType = true;
+                else if (type.IsSubclassOf(typeof(DifficultyCalculator)))
+                    hasDifficultyType = true;
+            }
+
+            return Tuple.Create(hasPerformanceType, hasDifficultyType);
+        }
+
         private void AddRuleset(Ruleset ruleset)
         {
             if (!_rulesets.TryAdd(ruleset.ShortName, ruleset))
             {
                 _logger.LogWarning("Ruleset with short name {shortName} already exists, skipping.", ruleset.ShortName);
                 return;
+            }
+
+            Tuple<bool, bool> performanceAndDifficultyTypes = GetAttributeTypesForRuleset(ruleset);
+            if (performanceAndDifficultyTypes.Item1)
+            {
+                _hasPerformanceCalculatorRulesets.Add(ruleset.ShortName);
+            }
+
+            if (performanceAndDifficultyTypes.Item2)
+            {
+                _hasDifficultyCalculatorRulesets.Add(ruleset.ShortName);
             }
 
             if (ruleset is not ILegacyRuleset legacyRuleset)
@@ -124,6 +154,21 @@ namespace PerformanceServer.Rulesets
             }
 
             return ruleset;
+        }
+
+        public IEnumerable<Ruleset> GetRulesets()
+        {
+            return _rulesets.Values;
+        }
+
+        public IEnumerable<Ruleset> GetHasPerformCalculatorRulesets()
+        {
+            return _hasPerformanceCalculatorRulesets.Select(shortName => _rulesets[shortName]);
+        }
+
+        public IEnumerable<Ruleset> GetHasDifficultyCalculatorRulesets()
+        {
+            return _hasDifficultyCalculatorRulesets.Select(shortName => _rulesets[shortName]);
         }
     }
 }

@@ -34,7 +34,7 @@ A server for calculating osu! performance points (pp) and star ratings.
 
 - `GET /` returns `{ "status": "ok", "time": "<UTC timestamp>" }` for readiness probes.
 
-### POST /difficulty
+## POST /difficulty
 
 Calculate difficulty attributes for a beatmap (star rating, etc.).
 
@@ -77,7 +77,7 @@ Error Cases:
 - `400 Bad Request` – Internal calculation failed (rare / invalid input).
 - `503 Service Unavailable` – Remote fetch failed (e.g., beatmap not accessible online).
 
-### POST /performance
+## POST /performance
 
 Calculate performance attributes (pp) using both difficulty and supplied score context.
 
@@ -128,6 +128,37 @@ Error Cases:
 
 - `400 Bad Request` – Calculation failed (e.g., malformed beatmap or inconsistent inputs).
 - `503 Service Unavailable` – Beatmap fetch failed.
+
+## GET /available_rulesets
+
+```bash
+curl -X GET "http://localhost:5225/available_rulesets"
+```
+
+Response: `200 OK` with a JSON object like this:
+
+```json
+{
+  "has_performance_calculator": [
+    "osu",
+    "taiko",
+    "fruits",
+    "mania"
+  ],
+  "has_difficulty_calculator": [
+    "osu",
+    "taiko",
+    "fruits",
+    "mania"
+  ],
+  "loaded_rulesets": [
+    "osu",
+    "taiko",
+    "fruits",
+    "mania"
+  ]
+}
+```
 
 ## Curl Examples
 
