@@ -10,13 +10,13 @@
     <ItemGroup>
         <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="8.0.20"/>
 
-        <PackageReference Include="ppy.osu.Game.Rulesets.Catch" Version="2025.1007.0"/>
-        <PackageReference Include="ppy.osu.Game.Rulesets.Mania" Version="2025.1007.0"/>
-        <PackageReference Include="ppy.osu.Game.Rulesets.Taiko" Version="2025.1007.0"/>
+        <PackageReference Include="ppy.osu.Game.Rulesets.Catch" Version="2025.1029.0"/>
+        <PackageReference Include="ppy.osu.Game.Rulesets.Mania" Version="2025.1029.0"/>
+        <PackageReference Include="ppy.osu.Game.Rulesets.Taiko" Version="2025.1029.0"/>
 
         <!-- https://github.com/orgs/GooGuTeam/packages?repo_name=osu -->
-        <PackageReference Include="g0v0.osu.Game" Version="2025.1018.1"/>
-        <PackageReference Include="g0v0.osu.Game.Rulesets.Osu" Version="2025.1018.1"/>
+        <PackageReference Include="g0v0.osu.Game" Version="2025.1101.0"/>
+        <PackageReference Include="g0v0.osu.Game.Rulesets.Osu" Version="2025.1101.0"/>
     </ItemGroup>
 
 </Project>
