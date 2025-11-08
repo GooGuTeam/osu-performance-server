@@ -2,11 +2,11 @@ name: Build and Push Docker Image
 
 on:
   push:
-    branches: [ master ]
+    branches: [ osurx ]
 
 env:
   REGISTRY: ghcr.io
-  IMAGE_NAME: googuteam/osu-performance-server
+  IMAGE_NAME: googuteam/osu-performance-server-osurx
 
 jobs:
   build:

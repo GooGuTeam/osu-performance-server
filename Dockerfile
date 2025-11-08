@@ -6,6 +6,16 @@ COPY global.json* ./
 COPY osu-performance-server.sln ./
 COPY PerformanceServer/PerformanceServer.csproj PerformanceServer/
 
+ARG GH_OWNER
+ARG GH_TOKEN
+
+RUN dotnet nuget add source \
+    --name github \
+    --username ${GH_OWNER} \
+    --password ${GH_TOKEN} \
+    --store-password-in-clear-text \
+    "https://nuget.pkg.github.com/${GH_OWNER}/index.json"
+
 RUN dotnet restore osu-performance-server.sln
 
 COPY PerformanceServer/ PerformanceServer/
