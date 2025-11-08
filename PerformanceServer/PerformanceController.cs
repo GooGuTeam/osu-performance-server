@@ -4,12 +4,15 @@
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using osu.Game.Beatmaps;
+using osu.Game.Database;
 using osu.Game.Online.API;
 using osu.Game.Rulesets;
 using osu.Game.Rulesets.Difficulty;
 using osu.Game.Rulesets.Mods;
 using osu.Game.Rulesets.Scoring;
+using osu.Game.Rulesets.Scoring.Legacy;
 using osu.Game.Scoring;
+using osu.Game.Scoring.Legacy;
 using PerformanceServer.Rulesets;
 
 namespace PerformanceServer
@@ -54,7 +57,7 @@ namespace PerformanceServer
             List<Mod> mods = body.Mods.Select(m => m.ToMod(ruleset)).ToList();
             if (body.IsLegacy && !mods.Any(m => m is ModClassic))
             {
-                Mod? classicMod = ruleset.CreateModFromAcronym("CL");
+                Mod? classicMod = ruleset.CreateMod<ModClassic>();
                 if (classicMod != null)
                     mods.Add(classicMod);
             }
@@ -67,6 +70,7 @@ namespace PerformanceServer
                 Mods = mods.ToArray(),
                 Accuracy = body.Accuracy,
                 MaxCombo = body.Combo,
+                Ruleset = ruleset.RulesetInfo,
             };
             ProcessorWorkingBeatmap workingBeatmap;
             if (body.BeatmapFile != null)
@@ -85,6 +89,18 @@ namespace PerformanceServer
                 {
                     return StatusCode(503, "Failed to fetch beatmap from online.");
                 }
+            }
+
+            IBeatmap? playableBeatmap = workingBeatmap.GetPlayableBeatmap(ruleset.RulesetInfo, scoreInfo.Mods);
+            scoreInfo.BeatmapInfo = playableBeatmap.BeatmapInfo;
+            LegacyScoreDecoder.PopulateMaximumStatistics(scoreInfo, workingBeatmap);
+            if (scoreInfo.IsLegacyScore)
+            {
+                StandardisedScoreMigrationTools.UpdateFromLegacy(
+                    scoreInfo,
+                    ruleset,
+                    LegacyBeatmapConversionDifficultyInfo.FromBeatmap(playableBeatmap),
+                    ((ILegacyRuleset)ruleset).CreateLegacyScoreSimulator().Simulate(workingBeatmap, playableBeatmap));
             }
 
             DifficultyAttributes? difficultyAttributes =
