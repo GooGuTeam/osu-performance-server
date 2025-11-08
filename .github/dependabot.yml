@@ -1,7 +1,12 @@
 version: 2
 updates:
-- package-ecosystem: nuget
-  directory: "/"
-  schedule:
-    interval: daily
-  open-pull-requests-limit: 10
+  - package-ecosystem: nuget
+    directory: "/"
+    schedule:
+      interval: daily
+    groups:
+      osu-game:
+        patterns:
+          - "ppy.osu.Game.*"
+          - "g0v0.osu.Game.*"
+    open-pull-requests-limit: 10
