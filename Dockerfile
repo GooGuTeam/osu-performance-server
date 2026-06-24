@@ -16,7 +16,7 @@ ARG PUBLISH_CONFIGURATION=Release
 RUN dotnet publish PerformanceServer/PerformanceServer.csproj \
     -c $PUBLISH_CONFIGURATION \
     -o /app/publish
-RUN rm -rf ./out/runtimes ./out/osu.Game.Resources.dll
+RUN rm -rf /app/publish/runtimes /app/publish/osu.Game.Resources.dll
 
 # -------- Runtime Stage --------
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS runtime
