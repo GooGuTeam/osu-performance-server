@@ -8,13 +8,12 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="8.0.21"/>
-
-        <PackageReference Include="ppy.osu.Game.Rulesets.Catch" Version="2026.317.0"/>
-        <PackageReference Include="ppy.osu.Game.Rulesets.Mania" Version="2026.317.0"/>
-        <PackageReference Include="ppy.osu.Game.Rulesets.Taiko" Version="2026.317.0"/>
-        <PackageReference Include="g0v0.osu.Game" Version="2026.321.5"/>
-        <PackageReference Include="g0v0.osu.Game.Rulesets.Osu" Version="2026.321.5"/>
+        <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="8.0.28"/>
+        <PackageReference Include="ppy.osu.Game.Rulesets.Catch" Version="2026.702.1"/>
+        <PackageReference Include="ppy.osu.Game.Rulesets.Mania" Version="2026.702.1"/>
+        <PackageReference Include="ppy.osu.Game.Rulesets.Taiko" Version="2026.702.1"/>
+        <PackageReference Include="g0v0.osu.Game" Version="2026.705.0"/>
+        <PackageReference Include="g0v0.osu.Game.Rulesets.Osu" Version="2026.705.0"/>
     </ItemGroup>
 
 </Project>
