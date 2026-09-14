@@ -9,11 +9,11 @@
 
     <ItemGroup>
         <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="10.0.12"/>
-        <PackageReference Include="ppy.osu.Game.Rulesets.Catch" Version="2026.730.0"/>
-        <PackageReference Include="ppy.osu.Game.Rulesets.Mania" Version="2026.730.0"/>
-        <PackageReference Include="ppy.osu.Game.Rulesets.Taiko" Version="2026.730.0"/>
-        <PackageReference Include="g0v0.osu.Game" Version="2026.816.0"/>
-        <PackageReference Include="g0v0.osu.Game.Rulesets.Osu" Version="2026.816.0"/>
+        <PackageReference Include="g0v0.osu.Game" Version="2026.913.1"/>
+        <PackageReference Include="g0v0.osu.Game.Rulesets.Catch" Version="2026.913.1"/>
+        <PackageReference Include="g0v0.osu.Game.Rulesets.Mania" Version="2026.913.1"/>
+        <PackageReference Include="g0v0.osu.Game.Rulesets.Osu" Version="2026.913.1"/>
+        <PackageReference Include="g0v0.osu.Game.Rulesets.Taiko" Version="2026.913.1"/>
     </ItemGroup>
 
 </Project>
