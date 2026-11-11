@@ -1,6 +1,6 @@
 # osu-performance-server
 
-A server for calculating osu! performance points (pp) and star ratings.
+A server for calculating upstream-compatible performance points (pp) and star ratings.
 
 ## Prerequisites
 
@@ -23,7 +23,7 @@ A server for calculating osu! performance points (pp) and star ratings.
 ## Configuration (Environment Variables)
 
 | Variable                | Default                      | Description                                                                                 |
-|-------------------------|------------------------------|---------------------------------------------------------------------------------------------|
+| ----------------------- | ---------------------------- | ------------------------------------------------------------------------------------------- |
 | `SAVE_BEATMAP_FILES`    | (unset / false)              | When set to `true`, fetched beatmaps are cached locally.                                    |
 | `BEATMAPS_PATH`         | `./beatmaps`                 | Directory for cached `.osu` files. Created if missing.                                      |
 | `RULESETS_PATH`         | `./rulesets`                 | Directory for ruleset DLLS loaded at runtime.                                               |
@@ -42,7 +42,7 @@ Request JSON fields:
 
 - `beatmap_id` (int) Required if `beatmap_file` not provided.
 - `checksum` (string, optional) MD5 hash used to validate local cached file; if mismatch triggers re-download.
-- `mods` (array, optional) List of osu! API mod objects (typically at least `{ "acronym": "HD" }`). Unsupported or
+- `mods` (array, optional) List of upstream API mod objects (typically at least `{ "acronym": "HD" }`). Unsupported or
   invalid acronyms will be ignored by the underlying conversion if not recognized.
 - `ruleset_id` (int, optional) Override ruleset; if omitted and beatmap file is provided/decoded it falls back to the
   beatmap's own ruleset.
@@ -92,7 +92,7 @@ Request JSON fields:
   name are provided, Name takes precedence.
 - `combo` (int) Achieved max combo for the score.
 - `statistics` (object) Mapping of hit result enum names to counts. Keys must match `HitResult` enumeration names from
-  osu! (e.g., `great`, `ok`, `meh`, `miss`, `perfect`, `good`, etc. — varies by ruleset). Only relevant ones need to be
+  upstream (e.g., `great`, `ok`, `meh`, `miss`, `perfect`, `good`, etc. — varies by ruleset). Only relevant ones need to be
   present.
 
 Minimal example:
@@ -139,24 +139,9 @@ Response: `200 OK` with a JSON object like this:
 
 ```json
 {
-  "has_performance_calculator": [
-    "osu",
-    "taiko",
-    "fruits",
-    "mania"
-  ],
-  "has_difficulty_calculator": [
-    "osu",
-    "taiko",
-    "fruits",
-    "mania"
-  ],
-  "loaded_rulesets": [
-    "osu",
-    "taiko",
-    "fruits",
-    "mania"
-  ]
+  "has_performance_calculator": ["osu", "taiko", "fruits", "mania"],
+  "has_difficulty_calculator": ["osu", "taiko", "fruits", "mania"],
+  "loaded_rulesets": ["osu", "taiko", "fruits", "mania"]
 }
 ```
 
@@ -176,7 +161,7 @@ curl -X POST "http://localhost:5225/performance" \
 
 ## Mods Format Notes
 
-`mods` leverages the osu! API `APIMod` model. The most common / minimal viable property is the mod acronym:
+`mods` leverages the upstream API `APIMod` model. The most common / minimal viable property is the mod acronym:
 
 ```json
 {
@@ -196,8 +181,7 @@ to accept config objects that map to mod settings.
 ## Troubleshooting
 
 | Issue              | Cause                              | Resolution                                                             |
-|--------------------|------------------------------------|------------------------------------------------------------------------|
+| ------------------ | ---------------------------------- | ---------------------------------------------------------------------- |
 | 503 on fetch       | Beatmap not reachable              | Verify ID exists, network, or site availability                        |
 | 400 on performance | Invalid statistics / internal null | Ensure ruleset matches beatmap & stats not contradictory               |
 | 400 on difficulty  | Invalid beatmap / ruleset          | Ensure beatmap is valid & beatmap can be convert into specific ruleset |
-
