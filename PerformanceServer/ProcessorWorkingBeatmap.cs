@@ -14,7 +14,6 @@ namespace PerformanceServer
     {
         public ProcessorWorkingBeatmap(string content) : this(ReadFromOsuFile(content))
         {
-            SaveToLocalFile(BeatmapInfo.OnlineID, content);
         }
 
         private static string BeatmapPath(int beatmapId) => Path.Combine(AppSettings.BeatmapsPath, $"{beatmapId}.osu");
