@@ -1,6 +1,7 @@
 // Copyright (c) 2025 GooGuTeam
 // Licensed under the MIT Licence. See the LICENCE file in the repository root for full licence text.
 
+using osu.Game.Rulesets.Difficulty;
 using PerformanceServer.Rulesets;
 
 namespace PerformanceServer
@@ -9,6 +10,7 @@ namespace PerformanceServer
     {
         public static void Main(string[] args)
         {
+            ModSpecificCalculation.Enabled = AppSettings.UseModSpecificCalculation;
             WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
             builder.Logging.AddConsole();
             builder.Services.AddSingleton<IRulesetManager, RulesetManager>();

@@ -8,6 +8,7 @@ using osu.Game.Online.API;
 using osu.Game.Rulesets;
 using osu.Game.Rulesets.Difficulty;
 using osu.Game.Rulesets.Mods;
+using osu.Game.Scoring;
 using PerformanceServer.Rulesets;
 
 namespace PerformanceServer
@@ -56,7 +57,7 @@ namespace PerformanceServer
             Ruleset ruleset = manager.GetRuleset(body, workingBeatmap.BeatmapInfo.Ruleset.OnlineID);
             Mod[] mods = body.Mods.Select(m => m.ToMod(ruleset)).ToArray();
             DifficultyAttributes? difficultyAttributes =
-                ruleset.CreateDifficultyCalculator(workingBeatmap).Calculate(mods);
+                ModSpecificCalculation.CreateDifficultyCalculator(ruleset, workingBeatmap).Calculate(mods);
 
             Dictionary<string, object>? attr =
                 JsonConvert.DeserializeObject<Dictionary<string, object>>(

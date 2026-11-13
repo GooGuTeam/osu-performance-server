@@ -4,7 +4,7 @@ A server for calculating upstream-compatible performance points (pp) and star ra
 
 ## Prerequisites
 
-- .NET SDK 8.0+ installed
+- .NET SDK 10.0+ installed
 - Internet access for on-demand beatmap fetching (unless providing `beatmap_file` or cached locally)
 
 ## Quick Start
@@ -29,6 +29,12 @@ A server for calculating upstream-compatible performance points (pp) and star ra
 | `RULESETS_PATH`         | `./rulesets`                 | Directory for ruleset DLLS loaded at runtime.                                               |
 | `OSU_FILE_WEB_URL`      | `https://osu.ppy.sh/osu/{0}` | Format string used to fetch beatmaps by ID. `{0}` replaced with beatmap ID.                 |
 | `MAX_BEATMAP_FILE_SIZE` | `5242880` (5 MB)             | Max size (bytes) allowed when deciding to persist fetched file. Larger files are not saved. |
+| `USE_MOD_SPECIFIC_CALCULATION` | `false` | Set to `true` to use g0v0's mod-specific difficulty and pp algorithms (osurx). Otherwise use the upstream algorithms. |
+
+Both algorithms are now available on `master` in the `ghcr.io/googuteam/osu-performance-server` image.
+The `osurx` branch and `osu-performance-server-osurx` image are deprecated. To migrate an osurx deployment,
+use the main image with `USE_MOD_SPECIFIC_CALCULATION=true`. The setting applies to both `/difficulty`
+and `/performance`; restart the server after changing it.
 
 ## Health Endpoints
 

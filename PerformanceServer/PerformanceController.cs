@@ -104,8 +104,8 @@ namespace PerformanceServer
             }
 
             DifficultyAttributes? difficultyAttributes =
-                ruleset.CreateDifficultyCalculator(workingBeatmap).Calculate(scoreInfo.Mods);
-            PerformanceCalculator? performanceCalculator = ruleset.CreatePerformanceCalculator();
+                ModSpecificCalculation.CreateDifficultyCalculator(ruleset, workingBeatmap).Calculate(scoreInfo.Mods);
+            PerformanceCalculator? performanceCalculator = ModSpecificCalculation.CreatePerformanceCalculator(ruleset);
             PerformanceAttributes? performanceAttributes =
                 performanceCalculator?.Calculate(scoreInfo, difficultyAttributes);
             return performanceAttributes == null

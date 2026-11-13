@@ -5,6 +5,7 @@ namespace PerformanceServer
 {
     public static class AppSettings
     {
+        public static bool UseModSpecificCalculation { get; set; }
         public static bool SaveBeatmapFiles { get; set; }
         public static string BeatmapsPath { get; set; } = "./beatmaps";
         public static string RulesetsPath { get; set; } = "./rulesets";
@@ -13,6 +14,7 @@ namespace PerformanceServer
 
         static AppSettings()
         {
+            UseModSpecificCalculation = bool.TryParse(Environment.GetEnvironmentVariable("USE_MOD_SPECIFIC_CALCULATION"), out bool enabled) && enabled;
             SaveBeatmapFiles = Environment.GetEnvironmentVariable("SAVE_BEATMAP_FILES")?.ToLower() == "true";
             BeatmapsPath = Environment.GetEnvironmentVariable("BEATMAPS_PATH") ?? BeatmapsPath;
             RulesetsPath = Environment.GetEnvironmentVariable("RULESETS_PATH") ?? RulesetsPath;
